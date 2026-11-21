@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LILA BLACK · Player Journey Explorer</title>
+<meta name="description" content="Explore where players move, fight, loot and die on LILA BLACK maps.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="logo">L</span><div><b>LILA BLACK</b><small>Player Journey Explorer</small></div></div>
+  <nav id="mapTabs" class="tabs" aria-label="Map"></nav>
+  <div class="topbar-right">
+    <button id="btnHelp" class="ghost" title="How to use">How to use</button>
+    <button id="btnShare" class="ghost" title="Copy a link to this exact view">Copy link</button>
+  </div>
+</header>
+
+<main class="layout">
+  <aside class="sidebar" id="sidebar">
+    <section>
+      <h3>Date <small id="dayHint">all days</small></h3>
+      <div id="dayChips" class="chips"></div>
+    </section>
+
+    <section>
+      <h3>Matches <small id="matchCount"></small></h3>
+      <div class="row">
+        <select id="sortSel" aria-label="Sort matches">
+          <option value="start">Sort: time</option>
+          <option value="dur">Sort: longest</option>
+          <option value="kills">Sort: most kills</option>
+          <option value="deaths">Sort: most deaths</option>
+          <option value="bots">Sort: most bots</option>
+        </select>
+        <button id="btnClearSel" class="ghost small">Clear</button>
+      </div>
+      <div id="quickChips" class="chips">
+        <button class="chip" data-q="storm" title="Matches where a player died to the storm">Storm death</button>
+        <button class="chip" data-q="pvp" title="Matches with a human-vs-human kill">PvP kill</button>
+        <button class="chip" data-q="bots" title="Matches where bot movement was recorded">Bot paths</button>
+      </div>
+      <div id="matchList" class="matchlist" role="listbox" aria-multiselectable="true"></div>
+      <p class="muted tiny" id="scopeHint"></p>
+    </section>
+
+    <section>
+      <h3>Heatmap</h3>
+      <div id="heatModes" class="seg"></div>
+      <label class="slider">Radius <input id="heatRadius" type="range" min="8" max="48" value="22"><output></output></label>
+      <label class="slider">Opacity <input id="heatOpacity" type="range" min="20" max="100" value="75"><output></output></label>
+      <label class="check"><input type="checkbox" id="heatFollow"> Build up with timeline</label>
+    </section>
+
+    <section>
+      <h3>Layers</h3>
+      <label class="check"><input type="checkbox" id="lyHumans" checked> <i class="sw human"></i> Human paths</label>
+      <label class="check"><input type="checkbox" id="lyBots" checked> <i class="sw bot"></i> Bot paths</label>
+      <label class="slider">Map dim <input id="mapDim" type="range" min="0" max="85" value="25"><output></output></label>
+      <div id="legend" class="legend"></div>
+    </section>
+
+    <section id="playersSec" hidden>
+      <h3>Players in match</h3>
+      <div id="playerList" class="players"></div>
+    </section>
+
+    <section class="statbox">
+      <h3>In view</h3>
+      <div id="stats" class="stats"></div>
+    </section>
+  </aside>
+
+  <section class="stage">
+    <div class="canvaswrap" id="wrap">
+      <canvas id="cv"></canvas>
+      <div id="tip" class="tip" hidden></div>
+      <div id="coord" class="coord">x — z —</div>
+      <div class="zoomctl">
+        <button id="zIn" title="Zoom in">+</button><button id="zOut" title="Zoom out">−</button><button id="zFit" title="Reset view">⟲</button>
+      </div>
+      <div id="loading" class="loading">Loading…</div>
+      <div id="empty" class="empty" hidden>No matches for this filter.</div>
+    </div>
+    <div class="timeline">
+      <button id="btnPlay" class="play" title="Play / pause (space)">▶</button>
+      <div class="scrub">
+        <canvas id="ticks" height="16"></canvas>
+        <input id="scrubber" type="range" min="0" max="100" value="0" step="0.1" aria-label="Match time">
+      </div>
+      <div class="clock"><span id="clockNow">0:00</span> / <span id="clockMax">0:00</span></div>
+      <select id="speedSel" aria-label="Playback speed">
+        <option value="1">1×</option><option value="2">2×</option><option value="5">5×</option>
+        <option value="10" selected>10×</option><option value="20">20×</option><option value="50">50×</option>
+      </select>
+      <label class="check inline"><input type="checkbox" id="loop"> Loop</label>
+    </div>
+  </section>
+</main>
+
+<div id="help" class="modal" hidden>
+  <div class="modal-card">
+    <h2>How to use</h2>
+    <ol>
+      <li><b>Pick a map</b> (top). The date chips and match list narrow what you see.</li>
+      <li><b>Click a match</b> to watch it; click several to overlay them. With nothing selected you see <i>every</i> match for the chosen days combined.</li>
+      <li><b>Press play</b> (or Space) to replay. All matches start at 0:00, so overlays line up by match time.</li>
+      <li><b>Heatmap</b>: switch between traffic, kill, death, loot and storm density. Tick “Build up with timeline” to watch hotspots form.</li>
+      <li><b>Legend</b> entries are clickable to hide/show an event type. Hover a marker for details and world coordinates.</li>
+      <li>Scroll to zoom, drag to pan. “Copy link” saves this exact view.</li>
+    </ol>
+    <button id="helpClose" class="primary">Got it</button>
+  </div>
+</div>
+<script src="app.js"></script>
+</body>
+</html>
